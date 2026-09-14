@@ -16,6 +16,9 @@ export default function Header() {
   const navLinks = [
     { label: 'Home', to: '/' },
     { label: 'Models', to: '/models' },
+    { label: 'BYD', to: '/byd' },
+    { label: 'Tesla', to: '/tesla' },
+    { label: 'RV', to: '/rv' },
   ];
 
   if (user && !isAdmin) {

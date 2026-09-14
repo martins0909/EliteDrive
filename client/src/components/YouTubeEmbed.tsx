@@ -17,7 +17,7 @@ export default function YouTubeEmbed({ url, title = 'YouTube video' }: YouTubeEm
 
   if (!videoId) return null;
 
-  const embedUrl = `https://www.youtube.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&controls=1&showinfo=0&iv_load_policy=3&fs=0`;
+  const embedUrl = `https://www.youtube-nocookie.com/embed/${videoId}?autoplay=1&modestbranding=1&rel=0&controls=1&showinfo=0&iv_load_policy=3&fs=0&playsinline=1`;
 
   return (
     <div className="relative aspect-[9/16] w-full max-w-[320px] mx-auto bg-ink-900 rounded-2xl overflow-hidden border border-white/10">

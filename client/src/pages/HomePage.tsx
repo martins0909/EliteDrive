@@ -11,10 +11,8 @@ import {
   CreditCard,
   PackageCheck,
   Truck,
-  Facebook,
-  Twitter,
-  Instagram,
-  Youtube,
+  Phone,
+  Mail,
   Clock,
   Users,
   Zap,
@@ -368,12 +366,6 @@ export default function HomePage() {
             electric revolution!"
           </p>
 
-          <img
-            src={wangChuanfu}
-            alt="CEO Wang Chuanfu"
-            className="w-full rounded-xl mb-4"
-          />
-
           <div className="flex items-center gap-6 text-sm text-gray-400 pt-4 border-t border-white/5">
             <button className="flex items-center gap-1.5 hover:text-red-400 transition-colors">
               <Heart className="w-4 h-4" /> 14k
@@ -421,37 +413,38 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Follow Official Social Media */}
+      {/* Contact Support */}
       <section className="section-padding py-12">
-        <div className="glass-card p-8 text-center">
+        <div className="glass-card p-8 text-center max-w-3xl mx-auto">
           <div className="flex items-center justify-center gap-2 mb-2">
-            <h2 className="font-display text-2xl font-bold text-white">Follow EliteDrive MotorGrants Auto</h2>
-            <BadgeCheck className="w-5 h-5 text-brand-400" />
+            <Phone className="w-5 h-5 text-brand-400" />
+            <h2 className="font-display text-2xl font-bold text-white">For Further Inquiries Contact Us</h2>
           </div>
-          <p className="text-gray-400 mb-8 max-w-xl mx-auto">
-            Official social media account of EliteDrive MotorGrants Auto worldwide.
+          <p className="text-gray-400 mb-6 max-w-xl mx-auto">
+            Reach out to our dedicated support teams for each brand.
           </p>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
             {[
-              { Icon: Twitter, name: 'X (Twitter)', handle: '@EliteDriveMG', color: 'hover:bg-gray-700', href: '#' },
-              { Icon: Facebook, name: 'Facebook', handle: 'EliteDriveMG', color: 'hover:bg-blue-600', href: '#' },
-              { Icon: Instagram, name: 'Instagram', handle: '@bestautomotorhome', color: 'hover:bg-pink-600', href: 'https://www.instagram.com/bestautomotorhome?stkn=a29qMm80MTlxcWFx' },
-              { Icon: Youtube, name: 'YouTube', handle: 'EliteDriveMG', color: 'hover:bg-red-600', href: '#' },
-            ].map((social) => (
+              { brand: 'Tesla support', email: 'xspaceelonmusk247@gmail.com' },
+              { brand: 'RV support', email: 'bobtiffinmotorhomegiveaway@gmail.com' },
+              { brand: 'BYD support', email: 'b.y.d.support247@gmail.com' },
+            ].map((support) => (
               <a
-                key={social.name}
-                href={social.href}
-                target={social.href !== '#' ? '_blank' : undefined}
-                rel={social.href !== '#' ? 'noopener noreferrer' : undefined}
-                onClick={social.href === '#' ? (e) => e.preventDefault() : undefined}
-                className={`glass-card p-5 flex flex-col items-center gap-2 transition-all hover:scale-105 ${social.color} hover:border-white/20`}
+                key={support.brand}
+                href={`mailto:${support.email}`}
+                className="glass-card p-5 flex flex-col items-start gap-2 transition-all hover:scale-105 hover:border-brand-400/30"
               >
-                <social.Icon className="w-8 h-8 text-white" />
-                <span className="text-sm font-semibold text-white">{social.name}</span>
-                <span className="text-xs text-gray-400">{social.handle}</span>
+                <Mail className="w-6 h-6 text-brand-400" />
+                <span className="text-sm font-semibold text-white">{support.brand}</span>
+                <span className="text-xs text-gray-400 break-all">{support.email}</span>
               </a>
             ))}
+          </div>
+
+          <div className="mt-6 flex items-center justify-center gap-2 text-gray-300">
+            <Phone className="w-4 h-4 text-brand-400" />
+            <span className="text-sm">Msg/call: <span className="font-semibold text-white">+1323900064</span></span>
           </div>
         </div>
       </section>

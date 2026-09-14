@@ -6,6 +6,9 @@ import LivePopup from '@/components/LivePopup';
 import SmartsuppChat from '@/components/SmartsuppChat';
 import HomePage from '@/pages/HomePage';
 import ModelsPage from '@/pages/ModelsPage';
+import BYDPage from '@/pages/BYDPage';
+import TeslaPage from '@/pages/TeslaPage';
+import RVPage from '@/pages/RVPage';
 import UserDashboard from '@/pages/UserDashboard';
 import DeliveryForm from '@/pages/DeliveryForm';
 import PaymentPage from '@/pages/PaymentPage';
@@ -55,6 +58,9 @@ function AppRoutes() {
       <Routes>
         <Route path="/" element={<HomePage />} />
         <Route path="/models" element={<ModelsPage />} />
+        <Route path="/byd" element={<BYDPage />} />
+        <Route path="/tesla" element={<TeslaPage />} />
+        <Route path="/rv" element={<RVPage />} />
         <Route path="/user" element={<PrivateRoute><UserDashboard /></PrivateRoute>} />
         <Route path="/claim" element={<DeliveryForm />} />
         <Route path="/payment" element={<PaymentPage />} />
