@@ -6,6 +6,7 @@ import {
   Heart,
   MessageCircle,
   Repeat2,
+  ChevronDown,
   MapPin,
   CreditCard,
   PackageCheck,
@@ -16,11 +17,13 @@ import {
   Youtube,
   Clock,
   Users,
+  Zap,
+  Battery,
+  Gauge,
   Loader2,
 } from 'lucide-react';
 import DeliveryFeed from '@/components/DeliveryFeed';
 import YouTubeEmbed from '@/components/YouTubeEmbed';
-import BrandSections from '@/components/BrandSections';
 import api from '@/lib/api';
 import type { Vehicle, Video } from '@/types';
 import michaelR from '@/assets/Michael R.jpg';
@@ -60,6 +63,7 @@ export default function HomePage() {
   const [liveCount, setLiveCount] = useState(1000);
   const [visibleComments, setVisibleComments] = useState(3);
   const [countdown, setCountdown] = useState({ days: 4, hours: 12, mins: 42, secs: 44 });
+  const [showAllModels, setShowAllModels] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehiclesLoading, setVehiclesLoading] = useState(true);
   const [videos, setVideos] = useState<Video[]>([]);
@@ -107,13 +111,7 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  const bydVehicles = vehicles.filter((v) => v.brand === 'BYD');
-  const teslaVehicles = vehicles.filter((v) => v.brand === 'Tesla');
-  const rvVehicles = vehicles.filter((v) => v.brand === 'RV');
-
-  const scrollToSection = (id: string) => {
-    document.getElementById(id)?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const displayedVehicles = showAllModels ? vehicles : vehicles.slice(0, 4);
 
   return (
     <div className="min-h-screen bg-ink-950">
@@ -142,20 +140,19 @@ export default function HomePage() {
 
             <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
               {['BYD', 'Tesla', 'RV'].map((brand) => (
-                <button
+                <span
                   key={brand}
-                  onClick={() => scrollToSection(`brand-${brand.toLowerCase()}`)}
-                  className="inline-flex items-center gap-1.5 glass px-4 py-1.5 rounded-full hover:bg-brand-500/20 hover:border-brand-400/30 transition-all border border-transparent"
+                  className="inline-flex items-center gap-1.5 glass px-4 py-1.5 rounded-full"
                 >
                   <span className="text-lg font-bold text-white">{brand}</span>
                   <BadgeCheck className="w-4 h-4 text-brand-400" />
-                </button>
+                </span>
               ))}
             </div>
 
             <p className="text-lg text-gray-300 leading-relaxed mb-8 max-w-2xl mx-auto">
               The world's #1 electric vehicle manufacturer, is giving away brand new electric cars
-              and motorhomes to participants worldwide. Claim your car today!
+              to participants worldwide. Claim your car today!
             </p>
 
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
@@ -185,42 +182,46 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Brand Sections */}
-      {vehiclesLoading ? (
-        <div className="flex justify-center py-20">
-          <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
+      {/* Vehicle Showcase */}
+      <section className="section-padding py-12">
+        <div className="text-center mb-10">
+          <h2 className="font-display text-3xl font-bold text-white mb-3">
+            Choose Your Preferred BYD Electric Car
+          </h2>
+          <p className="text-gray-400 max-w-2xl mx-auto">
+            All models are brand new, 2024–2025 editions delivered straight to your door.
+          </p>
         </div>
-      ) : (
-        <>
-          <BrandSections
-            id="brand-byd"
-            brand="BYD"
-            vehicles={bydVehicles}
-            countdown={countdown}
-            liveCount={liveCount}
-            onClaim={(v) => navigate('/claim', { state: { car: `${v.name} ${v.year} - ${v.type}` } })}
-            onPay={(v) => navigate('/payment', { state: { car: `${v.name} ${v.year} - ${v.type}`, fee: v.deliveryFee } })}
-          />
-          <BrandSections
-            id="brand-tesla"
-            brand="Tesla"
-            vehicles={teslaVehicles}
-            countdown={countdown}
-            liveCount={liveCount}
-            onClaim={(v) => navigate('/claim', { state: { car: `${v.name} ${v.year} - ${v.type}` } })}
-            onPay={(v) => navigate('/payment', { state: { car: `${v.name} ${v.year} - ${v.type}`, fee: v.deliveryFee } })}
-          />
-          <BrandSections
-            id="brand-rv"
-            brand="RV"
-            vehicles={rvVehicles}
-            countdown={countdown}
-            liveCount={liveCount}
-            onClaim={(v) => navigate('/claim', { state: { car: `${v.name} ${v.year} - ${v.type}` } })}
-            onPay={(v) => navigate('/payment', { state: { car: `${v.name} ${v.year} - ${v.type}`, fee: v.deliveryFee } })}
-          />
-        </>
-      )}
+
+        {vehiclesLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
+          </div>
+        ) : (
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+              {displayedVehicles.map((vehicle) => (
+                <VehicleCard
+                  key={vehicle.id}
+                  vehicle={vehicle}
+                  onClaim={() => navigate('/claim', { state: { car: `${vehicle.name} ${vehicle.year} - ${vehicle.type}` } })}
+                />
+              ))}
+            </div>
+
+            {!showAllModels && (
+              <div className="text-center mt-8">
+                <button
+                  onClick={() => setShowAllModels(true)}
+                  className="btn-outline"
+                >
+                  View All Models
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </section>
 
       {/* How to Claim Section */}
       <section className="section-padding py-16">
@@ -234,7 +235,7 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {[
             { num: '01', icon: MapPin, title: 'Enter Your Delivery Address', text: 'Enter your delivery address and contact information so EliteDrive can ship your car directly to you.' },
-            { num: '02', icon: Car, title: 'Choose Your Car', text: 'Select your preferred model from our range of brand new BYD, Tesla, and RV vehicles.' },
+            { num: '02', icon: Car, title: 'Choose Your Car', text: 'Select your preferred model from our range of brand new BYD electric vehicles.' },
             { num: '03', icon: CreditCard, title: 'Pay Delivery Fee', text: 'Pay the one-time delivery fee to cover shipping and logistics. This is the only fee required.' },
             { num: '04', icon: PackageCheck, title: 'Receive Your Vehicle', text: 'Your brand new electric car will be delivered to your door within 7–14 business days. Enjoy!' },
           ].map((step) => (
@@ -259,6 +260,44 @@ export default function HomePage() {
             <Car className="w-5 h-5" />
             Start Claiming Your Car Now
           </Link>
+        </div>
+      </section>
+
+      {/* Banner: Choose Your Electric Car */}
+      <section className="section-padding py-12">
+        <div className="glass-card overflow-hidden">
+          <div className="p-8 text-center bg-gradient-to-r from-brand-900/30 via-ink-900 to-accent-500/10">
+            <h2 className="font-display text-3xl font-bold text-white mb-3">Choose Your Electric Car</h2>
+            <p className="text-gray-300 max-w-2xl mx-auto mb-6">
+              EliteDrive MotorGrants is gifting brand new electric vehicles to participants worldwide.
+            </p>
+
+            {/* Countdown */}
+            <div className="inline-flex items-center gap-2 glass px-6 py-3 rounded-xl mb-2">
+              <Clock className="w-4 h-4 text-brand-400" />
+              <span className="text-sm text-gray-300">Event ends in:</span>
+              <div className="flex items-center gap-2 font-display font-bold text-white">
+                <span className="bg-brand-500/20 px-2 py-1 rounded text-brand-400">{countdown.days}d</span>
+                <span className="bg-brand-500/20 px-2 py-1 rounded text-brand-400">{countdown.hours}h</span>
+                <span className="bg-brand-500/20 px-2 py-1 rounded text-brand-400">{countdown.mins}m</span>
+                <span className="bg-brand-500/20 px-2 py-1 rounded text-brand-400">{countdown.secs}s</span>
+              </div>
+            </div>
+            <p className="text-sm text-gray-400">
+              {(72345 + liveCount).toLocaleString()} participants already
+            </p>
+          </div>
+
+          {/* Banner Cars */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-0 border-t border-white/10">
+            {vehicles.slice(0, 4).map((car) => (
+              <BannerCarCard
+                key={car.id}
+                car={car}
+                onClaim={() => navigate('/payment', { state: { car: `${car.name} ${car.year} - ${car.type}`, fee: car.deliveryFee } })}
+              />
+            ))}
+          </div>
         </div>
       </section>
 
@@ -422,6 +461,67 @@ export default function HomePage() {
         <h2 className="font-display text-2xl font-bold text-white mb-6">Live Delivery Feed</h2>
         <DeliveryFeed />
       </section>
+    </div>
+  );
+}
+
+function VehicleCard({ vehicle, onClaim }: { vehicle: Vehicle; onClaim: () => void }) {
+  return (
+    <div className="glass-card overflow-hidden group hover:border-brand-400/30 transition-all">
+      {vehicle.tag && (
+        <div className="absolute top-3 right-3 z-10 bg-brand-500 text-ink-950 text-xs font-bold px-3 py-1 rounded-full">
+          {vehicle.tag}
+        </div>
+      )}
+      <div className="relative aspect-[4/3] overflow-hidden">
+        <img
+          src={vehicle.image}
+          alt={vehicle.name}
+          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-ink-950/80 to-transparent" />
+      </div>
+      <div className="p-4">
+        <h3 className="font-display font-bold text-white text-lg">{vehicle.name} {vehicle.year}</h3>
+        <p className="text-sm text-gray-400 mb-3">{vehicle.type}</p>
+        <div className="flex items-center gap-3 text-xs text-gray-400 mb-4">
+          <span className="flex items-center gap-1"><Battery className="w-3.5 h-3.5 text-brand-400" /> {vehicle.range}</span>
+          <span className="flex items-center gap-1"><Zap className="w-3.5 h-3.5 text-brand-400" /> {vehicle.power}</span>
+        </div>
+        <button
+          onClick={onClaim}
+          className="w-full btn-primary text-sm py-2.5"
+        >
+          {vehicle.price}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+function BannerCarCard({ car, onClaim }: { car: Vehicle; onClaim: () => void }) {
+  return (
+    <div className="p-6 border-r border-b border-white/5 last:border-r-0">
+      <div className="aspect-video rounded-xl overflow-hidden mb-4">
+        <img src={car.image} alt={car.name} className="w-full h-full object-cover" />
+      </div>
+      <h3 className="font-display font-bold text-white text-lg mb-2">{car.name} {car.year}</h3>
+      <div className="space-y-1.5 mb-4">
+        {car.specs.map((spec) => (
+          <div key={spec.label} className="flex items-center justify-between text-xs">
+            <span className="text-gray-400">{spec.label}</span>
+            <span className="text-gray-200 font-medium">{spec.value}</span>
+          </div>
+        ))}
+      </div>
+      <div className="glass px-3 py-2 rounded-lg mb-3">
+        <p className="text-xs text-gray-400">One-time delivery fee</p>
+        <p className="text-lg font-bold text-brand-400">${car.deliveryFee}</p>
+        <p className="text-[10px] text-gray-500">Covers shipping, customs & logistics</p>
+      </div>
+      <button onClick={onClaim} className="w-full btn-primary text-sm py-2.5">
+        Claim This Electric Car
+      </button>
     </div>
   );
 }
