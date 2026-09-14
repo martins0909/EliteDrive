@@ -2,6 +2,7 @@ import mongoose, { Schema, Document } from 'mongoose';
 
 export interface IVehicle extends Document {
   id: string;
+  brand: 'BYD' | 'Tesla' | 'RV';
   name: string;
   year: number;
   type: string;
@@ -20,6 +21,7 @@ export interface IVehicle extends Document {
 
 const VehicleSchema = new Schema<IVehicle>({
   id: { type: String, required: true, unique: true },
+  brand: { type: String, enum: ['BYD', 'Tesla', 'RV'], required: true },
   name: { type: String, required: true },
   year: { type: Number, required: true },
   type: { type: String, required: true },

@@ -12,6 +12,21 @@ const youtubeVideos = [
   'https://youtube.com/shorts/3PFJqZ8QXho?si=MrrcMsUd8Y-ChcZT',
 ];
 
+const brandConfig: Record<string, { title: string; description: string }> = {
+  BYD: {
+    title: 'All BYD Electric Models',
+    description: 'Explore all BYD electric models and claim your preferred car today.',
+  },
+  Tesla: {
+    title: 'All Tesla Electric Models',
+    description: 'Explore all Tesla electric models and claim your preferred car today.',
+  },
+  RV: {
+    title: 'All RV Models',
+    description: 'Explore all RV models and claim your preferred vehicle today.',
+  },
+};
+
 export default function UserDashboard() {
   const { user } = useAuth();
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
@@ -48,7 +63,7 @@ export default function UserDashboard() {
             Welcome, {user?.name}
           </h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Explore all BYD electric models and claim your preferred car today.
+            Explore all BYD, Tesla, and RV models and claim your preferred vehicle today.
           </p>
         </div>
 
@@ -58,26 +73,33 @@ export default function UserDashboard() {
           </div>
         )}
 
-        <div className="text-center mb-10">
-          <h2 className="font-display text-3xl font-bold text-white mb-3">All BYD Electric Models</h2>
-          <p className="text-gray-400 max-w-2xl mx-auto">
-            Choose your preferred BYD electric car. All models are brand new, 2024–2025 editions
-            delivered straight to your door.
-          </p>
-        </div>
+        {(['BYD', 'Tesla', 'RV'] as const).map((brand) => {
+          const brandVehicles = vehicles.filter((v) => v.brand === brand);
+          if (brandVehicles.length === 0) return null;
+          const config = brandConfig[brand];
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
-          {vehicles.map((vehicle) => (
-            <ModelCard key={vehicle.id} vehicle={vehicle} />
-          ))}
-        </div>
+          return (
+            <section key={brand} id={`user-brand-${brand.toLowerCase()}`} className="mb-16 scroll-mt-24">
+              <div className="text-center mb-10">
+                <h2 className="font-display text-3xl font-bold text-white mb-3">{config.title}</h2>
+                <p className="text-gray-400 max-w-2xl mx-auto">{config.description}</p>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                {brandVehicles.map((vehicle) => (
+                  <ModelCard key={vehicle.id} vehicle={vehicle} />
+                ))}
+              </div>
+            </section>
+          );
+        })}
 
         {/* YouTube Section */}
         <div className="mb-12">
-          <h2 className="font-display text-2xl font-bold text-white mb-6 text-center">BYD Experience</h2>
+          <h2 className="font-display text-2xl font-bold text-white mb-6 text-center">BYD, TESLA, RV Experience</h2>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
             {youtubeVideos.map((url, idx) => (
-              <YouTubeEmbed key={idx} url={url} title={`BYD Video ${idx + 1}`} />
+              <YouTubeEmbed key={idx} url={url} title={`Video ${idx + 1}`} />
             ))}
           </div>
         </div>

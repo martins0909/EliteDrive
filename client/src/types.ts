@@ -1,6 +1,7 @@
 export interface Vehicle {
   _id?: string;
   id: string;
+  brand: 'BYD' | 'Tesla' | 'RV';
   name: string;
   year: number;
   type: string;

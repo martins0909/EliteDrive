@@ -532,6 +532,7 @@ export default function AdminDashboard() {
 
 function VehicleForm({ vehicle, onClose, onSuccess }: { vehicle: Vehicle | null; onClose: () => void; onSuccess: () => void }) {
   const [formData, setFormData] = useState({
+    brand: vehicle?.brand || 'BYD',
     name: vehicle?.name || '',
     year: vehicle?.year || 2025,
     type: vehicle?.type || '',
@@ -558,7 +559,7 @@ function VehicleForm({ vehicle, onClose, onSuccess }: { vehicle: Vehicle | null;
   const [imagePreview, setImagePreview] = useState(vehicle?.image || '');
   const [submitting, setSubmitting] = useState(false);
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: name === 'year' || name === 'deliveryFee' ? Number(value) : value });
   };
@@ -622,6 +623,19 @@ function VehicleForm({ vehicle, onClose, onSuccess }: { vehicle: Vehicle | null;
         {vehicle ? 'Edit Vehicle' : 'Add New Vehicle'}
       </h2>
       <form onSubmit={handleSubmit} className="space-y-5">
+        <div>
+          <label className="block text-sm font-medium text-gray-300 mb-2">Brand</label>
+          <select
+            name="brand"
+            value={formData.brand}
+            onChange={handleChange}
+            className="w-full glass px-4 py-3 rounded-xl text-white focus:border-brand-400/50 focus:outline-none"
+          >
+            {['BYD', 'Tesla', 'RV'].map((b) => (
+              <option key={b} value={b} className="bg-ink-900">{b}</option>
+            ))}
+          </select>
+        </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <input type="text" name="name" value={formData.name} onChange={handleChange} required placeholder="Vehicle Name" className="glass px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:border-brand-400/50 focus:outline-none" />
           <input type="text" name="type" value={formData.type} onChange={handleChange} required placeholder="Type (e.g. Electric Sedan)" className="glass px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:border-brand-400/50 focus:outline-none" />
