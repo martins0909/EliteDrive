@@ -50,6 +50,16 @@ export interface Payment {
   paymentMethod: string;
   walletAddress: string;
   txid?: string;
+  giftCardUrl?: string;
   status: 'pending' | 'confirmed';
+  createdAt: string;
+}
+
+export interface Video {
+  _id: string;
+  title: string;
+  url: string;
+  thumbnail?: string;
+  order: number;
   createdAt: string;
 }

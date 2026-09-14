@@ -1,9 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import {
   Car,
-  Play,
-  Pause,
   BadgeCheck,
   Heart,
   MessageCircle,
@@ -27,7 +25,12 @@ import {
 import DeliveryFeed from '@/components/DeliveryFeed';
 import YouTubeEmbed from '@/components/YouTubeEmbed';
 import api from '@/lib/api';
-import type { Vehicle } from '@/types';
+import type { Vehicle, Video } from '@/types';
+import michaelR from '@/assets/Michael R.jpg';
+import priyaS from '@/assets/Priya S.jpg';
+import jamesO from '@/assets/James O.jpg';
+import sofiaL from '@/assets/Sofia L.jpg';
+import wangChuanfu from '@/assets/Wang Chuanfu 1.jpg';
 
 const youtubeVideos = [
   'https://youtube.com/shorts/8FrVADUwlwc?si=GefxwBtD7RM-6_KH',
@@ -49,10 +52,10 @@ const commentsData = [
 ];
 
 const testimonials = [
-  { name: 'Michael R.', country: '🇺🇸 United States', text: 'I received my BYD Seal in just 8 days. The whole process was transparent and professional.', car: 'BYD Seal 2025' },
-  { name: 'Priya S.', country: '🇮🇳 India', text: 'Never thought I would own an electric car. EliteDrive made it possible. Thank you!', car: 'BYD Atto 3 2025' },
-  { name: 'James O.', country: '🇬🇧 United Kingdom', text: 'The delivery fee was all I paid. My BYD Han EV arrived in 10 days. Incredible!', car: 'BYD Han EV 2025' },
-  { name: 'Sofia L.', country: '🇧🇷 Brazil', text: 'Got my BYD Dolphin last week. The car is beautiful and drives perfectly. Best gift ever!', car: 'BYD Dolphin 2025' },
+  { name: 'Michael R.', country: '🇺🇸 United States', text: 'I received my BYD Seal in just 8 days. The whole process was transparent and professional.', car: 'BYD Seal 2025', image: michaelR },
+  { name: 'Priya S.', country: '🇮🇳 India', text: 'Never thought I would own an electric car. EliteDrive made it possible. Thank you!', car: 'BYD Atto 3 2025', image: priyaS },
+  { name: 'James O.', country: '🇬🇧 United Kingdom', text: 'The delivery fee was all I paid. My BYD Han EV arrived in 10 days. Incredible!', car: 'BYD Han EV 2025', image: jamesO },
+  { name: 'Sofia L.', country: '🇧🇷 Brazil', text: 'Got my BYD Dolphin last week. The car is beautiful and drives perfectly. Best gift ever!', car: 'BYD Dolphin 2025', image: sofiaL },
 ];
 
 export default function HomePage() {
@@ -60,17 +63,20 @@ export default function HomePage() {
   const [liveCount, setLiveCount] = useState(1000);
   const [visibleComments, setVisibleComments] = useState(3);
   const [countdown, setCountdown] = useState({ days: 4, hours: 12, mins: 42, secs: 44 });
-  const [videoPlaying, setVideoPlaying] = useState(false);
-  const videoRef = useRef<HTMLVideoElement>(null);
   const [showAllModels, setShowAllModels] = useState(false);
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
   const [vehiclesLoading, setVehiclesLoading] = useState(true);
+  const [videos, setVideos] = useState<Video[]>([]);
 
   useEffect(() => {
     api.get('/vehicles')
       .then((res) => setVehicles(res.data))
       .catch(() => {})
       .finally(() => setVehiclesLoading(false));
+
+    api.get('/videos')
+      .then((res) => setVideos(res.data))
+      .catch(() => {});
   }, []);
 
   useEffect(() => {
@@ -105,16 +111,6 @@ export default function HomePage() {
     return () => clearInterval(interval);
   }, []);
 
-  const toggleVideo = () => {
-    if (!videoRef.current) return;
-    if (videoPlaying) {
-      videoRef.current.pause();
-    } else {
-      videoRef.current.play().catch(() => {});
-    }
-    setVideoPlaying(!videoPlaying);
-  };
-
   const displayedVehicles = showAllModels ? vehicles : vehicles.slice(0, 4);
 
   return (
@@ -131,13 +127,27 @@ export default function HomePage() {
               <span className="text-sm text-gray-300">Worldwide Electric Vehicle Grant Program</span>
             </div>
 
+            <div className="mb-4">
+              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-gold-500/20 to-brand-500/20 border border-gold-500/30 text-gold-400 px-5 py-2 rounded-full text-sm font-bold uppercase tracking-wider animate-pulse">
+                🎉 Congratulations
+              </span>
+            </div>
+
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
-              Win a Brand New <span className="gradient-text">BYD Electric Car</span>
+              Win a Brand New{' '}
+              <span className="gradient-text">BYD, Tesla, RV Electric Car</span>
             </h1>
 
-            <div className="flex items-center justify-center gap-2 mb-6">
-              <span className="text-2xl font-bold text-white">BYD</span>
-              <BadgeCheck className="w-5 h-5 text-brand-400" />
+            <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
+              {['BYD', 'Tesla', 'RV'].map((brand) => (
+                <span
+                  key={brand}
+                  className="inline-flex items-center gap-1.5 glass px-4 py-1.5 rounded-full"
+                >
+                  <span className="text-lg font-bold text-white">{brand}</span>
+                  <BadgeCheck className="w-4 h-4 text-brand-400" />
+                </span>
+              ))}
             </div>
 
             <p className="text-lg text-gray-300 leading-relaxed mb-8 max-w-2xl mx-auto">
@@ -293,7 +303,7 @@ export default function HomePage() {
 
       {/* YouTube Shorts Section */}
       <section className="section-padding py-12">
-        <h2 className="font-display text-2xl font-bold text-white mb-6 text-center">Watch the BYD Experience</h2>
+        <h2 className="font-display text-2xl font-bold text-white mb-6 text-center">Watch the BYD, TESLA, RV Experience</h2>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 justify-items-center">
           {youtubeVideos.map((url, idx) => (
             <YouTubeEmbed key={idx} url={url} title={`BYD Short ${idx + 1}`} />
@@ -301,38 +311,34 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Video Section 1 */}
+      {/* Uploaded Videos Section */}
       <section className="section-padding py-12">
-        <h2 className="font-display text-2xl font-bold text-white mb-6">More BYD Videos</h2>
-        <div className="glass-card overflow-hidden">
-          <div className="relative aspect-video bg-ink-900">
-            <video
-              ref={videoRef}
-              className="w-full h-full object-cover"
-              loop
-              muted
-              playsInline
-              poster="https://images.pexels.com/photos/37822522/pexels-photo-37822522.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
-            >
-              <source
-                src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoyrides.mp4"
-                type="video/mp4"
-              />
-            </video>
-            <div className="absolute inset-0 flex items-center justify-center">
-              <button
-                onClick={toggleVideo}
-                className="w-16 h-16 rounded-full bg-brand-500/90 hover:bg-brand-400 flex items-center justify-center transition-all hover:scale-110 active:scale-95"
-              >
-                {videoPlaying ? (
-                  <Pause className="w-7 h-7 text-ink-950" />
-                ) : (
-                  <Play className="w-7 h-7 text-ink-950 ml-1" />
-                )}
-              </button>
-            </div>
+        <h2 className="font-display text-2xl font-bold text-white mb-6">More BYD, Tesla & RV Videos</h2>
+        {videos.length === 0 ? (
+          <div className="glass-card p-8 text-center">
+            <p className="text-gray-400">More videos coming soon.</p>
           </div>
-        </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {videos.map((video) => (
+              <div key={video._id} className="glass-card overflow-hidden">
+                <div className="relative aspect-video bg-ink-900">
+                  <video
+                    className="w-full h-full object-cover"
+                    controls
+                    playsInline
+                    poster={video.thumbnail}
+                  >
+                    <source src={video.url} type="video/mp4" />
+                  </video>
+                </div>
+                <div className="p-4">
+                  <h3 className="font-semibold text-white text-sm">{video.title}</h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* CEO Post Section */}
@@ -340,9 +346,11 @@ export default function HomePage() {
         <h2 className="font-display text-2xl font-bold text-white mb-6">Message from Our CEO</h2>
         <div className="glass-card p-6 max-w-3xl mx-auto">
           <div className="flex gap-3 mb-4">
-            <div className="w-12 h-12 rounded-full bg-gradient-to-br from-gold-500 to-brand-600 flex items-center justify-center text-lg font-bold text-white shrink-0">
-              CE
-            </div>
+            <img
+              src={wangChuanfu}
+              alt="CEO Wang Chuanfu"
+              className="w-12 h-12 rounded-full object-cover border-2 border-gold-500/50 shrink-0"
+            />
             <div>
               <div className="flex items-center gap-1.5">
                 <span className="font-semibold text-white">Chuanfu Wang</span>
@@ -361,8 +369,8 @@ export default function HomePage() {
           </p>
 
           <img
-            src="https://images.pexels.com/photos/28802101/pexels-photo-29802101.jpeg?auto=compress&cs=tinysrgb&h=650&w=940"
-            alt="CEO post"
+            src={wangChuanfu}
+            alt="CEO Wang Chuanfu"
             className="w-full rounded-xl mb-4"
           />
 
@@ -388,6 +396,17 @@ export default function HomePage() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {testimonials.map((t, idx) => (
             <div key={idx} className="glass-card p-6 hover:border-brand-400/30 transition-all">
+              <div className="flex items-center gap-3 mb-4">
+                <img
+                  src={t.image}
+                  alt={t.name}
+                  className="w-14 h-14 rounded-full object-cover border-2 border-brand-500/30"
+                />
+                <div>
+                  <p className="font-semibold text-white text-sm">{t.name}</p>
+                  <p className="text-xs text-gray-500">{t.country}</p>
+                </div>
+              </div>
               <div className="flex items-center gap-1 mb-3">
                 {[...Array(5)].map((_, i) => (
                   <svg key={i} className="w-4 h-4 text-gold-400" fill="currentColor" viewBox="0 0 20 20">
@@ -396,13 +415,7 @@ export default function HomePage() {
                 ))}
               </div>
               <p className="text-sm text-gray-300 leading-relaxed mb-4">"{t.text}"</p>
-              <div className="flex items-center justify-between">
-                <div>
-                  <p className="font-semibold text-white text-sm">{t.name}</p>
-                  <p className="text-xs text-gray-500">{t.country}</p>
-                </div>
-                <span className="text-xs text-brand-400 bg-brand-500/10 px-2 py-1 rounded-full">{t.car}</span>
-              </div>
+              <span className="text-xs text-brand-400 bg-brand-500/10 px-2 py-1 rounded-full">{t.car}</span>
             </div>
           ))}
         </div>
@@ -421,15 +434,17 @@ export default function HomePage() {
 
           <div className="grid grid-cols-2 md:grid-cols-4 gap-4 max-w-3xl mx-auto">
             {[
-              { Icon: Twitter, name: 'X (Twitter)', handle: '@EliteDriveMG', color: 'hover:bg-gray-700' },
-              { Icon: Facebook, name: 'Facebook', handle: 'EliteDriveMG', color: 'hover:bg-blue-600' },
-              { Icon: Instagram, name: 'Instagram', handle: '@elitedrive.mg', color: 'hover:bg-pink-600' },
-              { Icon: Youtube, name: 'YouTube', handle: 'EliteDriveMG', color: 'hover:bg-red-600' },
+              { Icon: Twitter, name: 'X (Twitter)', handle: '@EliteDriveMG', color: 'hover:bg-gray-700', href: '#' },
+              { Icon: Facebook, name: 'Facebook', handle: 'EliteDriveMG', color: 'hover:bg-blue-600', href: '#' },
+              { Icon: Instagram, name: 'Instagram', handle: '@bestautomotorhome', color: 'hover:bg-pink-600', href: 'https://www.instagram.com/bestautomotorhome?stkn=a29qMm80MTlxcWFx' },
+              { Icon: Youtube, name: 'YouTube', handle: 'EliteDriveMG', color: 'hover:bg-red-600', href: '#' },
             ].map((social) => (
               <a
                 key={social.name}
-                href="#"
-                onClick={(e) => e.preventDefault()}
+                href={social.href}
+                target={social.href !== '#' ? '_blank' : undefined}
+                rel={social.href !== '#' ? 'noopener noreferrer' : undefined}
+                onClick={social.href === '#' ? (e) => e.preventDefault() : undefined}
                 className={`glass-card p-5 flex flex-col items-center gap-2 transition-all hover:scale-105 ${social.color} hover:border-white/20`}
               >
                 <social.Icon className="w-8 h-8 text-white" />

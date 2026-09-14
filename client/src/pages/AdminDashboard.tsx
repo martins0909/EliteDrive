@@ -2,16 +2,16 @@ import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   CheckCircle2, Clock, Car, Search, XCircle, PackageCheck, Truck,
-  Plus, Pencil, Trash2, Loader2, LogOut
+  Plus, Pencil, Trash2, Loader2, LogOut, Gift, Video, Upload, Download
 } from 'lucide-react';
 import { useAuth } from '@/contexts/AuthContext';
 import api from '@/lib/api';
-import type { Order, Payment, Vehicle } from '@/types';
+import type { Order, Payment, Vehicle, Video as VideoType } from '@/types';
 
 export default function AdminDashboard() {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = useState<'orders' | 'vehicles'>('orders');
+  const [activeTab, setActiveTab] = useState<'orders' | 'vehicles' | 'videos'>('orders');
 
   // Orders state
   const [orders, setOrders] = useState<Order[]>([]);
@@ -26,9 +26,17 @@ export default function AdminDashboard() {
   const [editingVehicle, setEditingVehicle] = useState<Vehicle | null>(null);
   const [showVehicleForm, setShowVehicleForm] = useState(false);
 
+  // Videos state
+  const [videos, setVideos] = useState<VideoType[]>([]);
+  const [videosLoading, setVideosLoading] = useState(true);
+  const [videoTitle, setVideoTitle] = useState('');
+  const [videoFile, setVideoFile] = useState<File | null>(null);
+  const [uploadingVideo, setUploadingVideo] = useState(false);
+
   useEffect(() => {
     fetchOrders();
     fetchVehicles();
+    fetchVideos();
   }, []);
 
   const fetchOrders = async () => {
@@ -56,6 +64,49 @@ export default function AdminDashboard() {
       // ignore
     } finally {
       setVehiclesLoading(false);
+    }
+  };
+
+  const fetchVideos = async () => {
+    setVideosLoading(true);
+    try {
+      const res = await api.get('/videos');
+      setVideos(res.data);
+    } catch (err) {
+      // ignore
+    } finally {
+      setVideosLoading(false);
+    }
+  };
+
+  const uploadVideo = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!videoFile) return;
+    setUploadingVideo(true);
+    try {
+      const data = new FormData();
+      data.append('video', videoFile);
+      data.append('data', JSON.stringify({ title: videoTitle || videoFile.name }));
+      await api.post('/videos', data, {
+        headers: { 'Content-Type': 'multipart/form-data' },
+      });
+      setVideoTitle('');
+      setVideoFile(null);
+      fetchVideos();
+    } catch (err: any) {
+      alert(err.response?.data?.message || 'Failed to upload video');
+    } finally {
+      setUploadingVideo(false);
+    }
+  };
+
+  const deleteVideo = async (id: string) => {
+    if (!confirm('Are you sure you want to delete this video?')) return;
+    try {
+      await api.delete(`/videos/${id}`);
+      fetchVideos();
+    } catch (err) {
+      alert('Failed to delete video');
     }
   };
 
@@ -113,7 +164,7 @@ export default function AdminDashboard() {
         <div className="mb-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <h1 className="font-display text-3xl font-bold text-white mb-2">Admin Dashboard</h1>
-            <p className="text-gray-400">Manage orders, vehicles, and track deliveries.</p>
+            <p className="text-gray-400">Manage orders, vehicles, videos, and track deliveries.</p>
           </div>
           <div className="flex items-center gap-3">
             <span className="text-sm text-gray-400">{user?.email}</span>
@@ -128,7 +179,7 @@ export default function AdminDashboard() {
 
         {/* Tabs */}
         <div className="flex gap-2 mb-8">
-          {(['orders', 'vehicles'] as const).map((tab) => (
+          {(['orders', 'vehicles', 'videos'] as const).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
@@ -277,14 +328,15 @@ export default function AdminDashboard() {
                         </div>
 
                         {/* Payment Actions */}
-                        <div className="lg:w-64 shrink-0 border-t lg:border-t-0 lg:border-l border-white/10 pt-4 lg:pt-0 lg:pl-4">
+                        <div className="lg:w-80 shrink-0 border-t lg:border-t-0 lg:border-l border-white/10 pt-4 lg:pt-0 lg:pl-4">
                           {hasPayment ? (
                             <div className="space-y-2">
                               <p className="text-xs font-semibold text-gray-500 mb-1">Payments</p>
                               {orderPayments.map((pay) => (
                                 <div key={pay._id} className="glass p-3 rounded-lg">
                                   <div className="flex items-center justify-between mb-2">
-                                    <span className="text-xs text-gray-400">
+                                    <span className="text-xs text-gray-400 flex items-center gap-1">
+                                      {pay.paymentMethod === 'giftcard' ? <Gift className="w-3 h-3" /> : <CheckCircle2 className="w-3 h-3" />}
                                       {pay.paymentMethod.toUpperCase()} ${pay.amount}
                                     </span>
                                     <span className={`text-xs font-semibold ${
@@ -297,6 +349,24 @@ export default function AdminDashboard() {
                                     <p className="text-[10px] text-gray-500 font-mono truncate mb-2">
                                       TX: {pay.txid}
                                     </p>
+                                  )}
+                                  {pay.giftCardUrl && (
+                                    <div className="mb-2">
+                                      <img
+                                        src={pay.giftCardUrl}
+                                        alt="Gift card"
+                                        className="w-full h-24 object-contain rounded-lg bg-ink-900 mb-1"
+                                      />
+                                      <a
+                                        href={pay.giftCardUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        download
+                                        className="inline-flex items-center gap-1 text-xs text-accent-400 hover:text-accent-500"
+                                      >
+                                        <Download className="w-3 h-3" /> Download Gift Card
+                                      </a>
+                                    </div>
                                   )}
                                   {pay.status !== 'confirmed' && (
                                     <button
@@ -387,6 +457,67 @@ export default function AdminDashboard() {
                           <Trash2 className="w-3.5 h-3.5" /> Delete
                         </button>
                       </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </>
+        )}
+
+        {activeTab === 'videos' && (
+          <>
+            <div className="glass-card p-6 mb-8 border-brand-500/20">
+              <h2 className="font-display text-xl font-bold text-white mb-4 flex items-center gap-2">
+                <Upload className="w-5 h-5" /> Upload Home Page Video
+              </h2>
+              <form onSubmit={uploadVideo} className="space-y-4">
+                <input
+                  type="text"
+                  value={videoTitle}
+                  onChange={(e) => setVideoTitle(e.target.value)}
+                  placeholder="Video title"
+                  className="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:border-brand-400/50 focus:outline-none"
+                />
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={(e) => e.target.files && setVideoFile(e.target.files[0])}
+                  className="block w-full text-sm text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-brand-500 file:text-ink-950 hover:file:bg-brand-400"
+                />
+                <button
+                  type="submit"
+                  disabled={!videoFile || uploadingVideo}
+                  className="btn-primary flex items-center gap-2 disabled:opacity-50"
+                >
+                  {uploadingVideo ? <Loader2 className="w-4 h-4 animate-spin" /> : <Video className="w-4 h-4" />}
+                  {uploadingVideo ? 'Uploading...' : 'Upload Video'}
+                </button>
+              </form>
+            </div>
+
+            {videosLoading ? (
+              <div className="flex items-center justify-center py-20">
+                <Loader2 className="w-8 h-8 text-brand-500 animate-spin" />
+              </div>
+            ) : videos.length === 0 ? (
+              <div className="glass-card p-12 text-center">
+                <Video className="w-12 h-12 text-gray-600 mx-auto mb-4" />
+                <p className="text-gray-400">No videos uploaded yet.</p>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {videos.map((video) => (
+                  <div key={video._id} className="glass-card overflow-hidden">
+                    <video className="w-full aspect-video object-cover" controls src={video.url} />
+                    <div className="p-4 flex items-center justify-between">
+                      <h3 className="font-semibold text-white text-sm">{video.title}</h3>
+                      <button
+                        onClick={() => deleteVideo(video._id)}
+                        className="text-red-400 hover:text-red-300 text-xs flex items-center gap-1"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" /> Delete
+                      </button>
                     </div>
                   </div>
                 ))}

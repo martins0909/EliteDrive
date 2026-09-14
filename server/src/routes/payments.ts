@@ -1,21 +1,56 @@
 import express from 'express';
+import multer from 'multer';
+import { v2 as cloudinary } from 'cloudinary';
+import { CloudinaryStorage } from 'multer-storage-cloudinary';
 import Payment from '../models/Payment.js';
 import Order from '../models/Order.js';
 import { auth, adminOnly } from '../middleware/auth.js';
 
 const router = express.Router();
 
+const cloudName = process.env.CLOUDINARY_CLOUD_NAME;
+const apiKey = process.env.CLOUDINARY_API_KEY;
+const apiSecret = process.env.CLOUDINARY_API_SECRET;
+const cloudinaryConfigured = !!(cloudName && apiKey && apiSecret);
+
+if (cloudinaryConfigured) {
+  cloudinary.config({
+    cloud_name: cloudName,
+    api_key: apiKey,
+    api_secret: apiSecret,
+  });
+}
+
+const storage = cloudinaryConfigured
+  ? new CloudinaryStorage({
+      cloudinary,
+      params: {
+        folder: 'elitecarautos/giftcards',
+        allowed_formats: ['jpg', 'jpeg', 'png', 'pdf'],
+      } as any,
+    })
+  : multer.memoryStorage();
+
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+
 // Create payment
-router.post('/', async (req, res) => {
+router.post('/', upload.single('giftCard'), async (req, res) => {
   try {
     const { orderId, amount, paymentMethod, walletAddress, txid } = req.body;
-    const payment = new Payment({ orderId, amount, paymentMethod, walletAddress, txid });
+    const paymentData: any = { orderId, amount, paymentMethod, walletAddress, txid };
+
+    if (req.file) {
+      paymentData.giftCardUrl = req.file.path;
+    }
+
+    const payment = new Payment(paymentData);
     await payment.save();
 
     await Order.findByIdAndUpdate(orderId, { status: 'paid' });
 
     res.status(201).json(payment);
   } catch (error) {
+    console.error('Create payment error:', error);
     res.status(500).json({ message: 'Server error creating payment' });
   }
 });

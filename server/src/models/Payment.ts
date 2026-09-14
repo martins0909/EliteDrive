@@ -6,6 +6,7 @@ export interface IPayment extends Document {
   paymentMethod: string;
   walletAddress: string;
   txid?: string;
+  giftCardUrl?: string;
   status: 'pending' | 'confirmed';
 }
 
@@ -15,6 +16,7 @@ const PaymentSchema = new Schema<IPayment>({
   paymentMethod: { type: String, default: 'bitcoin' },
   walletAddress: { type: String, required: true },
   txid: { type: String },
+  giftCardUrl: { type: String },
   status: { type: String, enum: ['pending', 'confirmed'], default: 'pending' },
 }, {
   timestamps: true,

@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from '@/contexts/AuthContext';
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 import LivePopup from '@/components/LivePopup';
+import SmartsuppChat from '@/components/SmartsuppChat';
 import HomePage from '@/pages/HomePage';
 import ModelsPage from '@/pages/ModelsPage';
 import UserDashboard from '@/pages/UserDashboard';
@@ -43,6 +44,7 @@ function Layout({ children }: { children: React.ReactNode }) {
       <LivePopup />
       <main>{children}</main>
       <Footer />
+      <SmartsuppChat />
     </div>
   );
 }

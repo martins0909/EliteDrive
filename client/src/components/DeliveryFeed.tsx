@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 
 interface FeedItem {
   id: string;
@@ -33,7 +33,25 @@ const fallbackFeed: FeedItem[] = [
 ];
 
 export default function DeliveryFeed() {
-  const [feed] = useState<FeedItem[]>(fallbackFeed);
+  const [feed, setFeed] = useState<FeedItem[]>(fallbackFeed);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setFeed((prev) => {
+        // Shift items and add a new one at the top
+        const shuffled = [...prev];
+        const last = shuffled.pop();
+        if (!last) return prev;
+        const newItem = {
+          ...last,
+          id: Math.random().toString(36).slice(2),
+          minutes_ago: Math.floor(Math.random() * 5) + 1,
+        };
+        return [newItem, ...shuffled];
+      });
+    }, 2000);
+    return () => clearInterval(interval);
+  }, []);
 
   return (
     <div className="glass-card overflow-hidden">
@@ -46,7 +64,7 @@ export default function DeliveryFeed() {
         {feed.map((item) => (
           <div
             key={item.id}
-            className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors"
+            className="flex items-center gap-3 px-4 py-3 hover:bg-white/[0.03] transition-colors animate-fade-in"
           >
             <div className="flex items-center gap-2 min-w-0 flex-1">
               <FlagEmoji code={item.country_code} />

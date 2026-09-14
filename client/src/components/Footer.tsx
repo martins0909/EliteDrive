@@ -68,16 +68,18 @@ export default function Footer() {
             <h4 className="font-semibold text-white text-sm mb-4">Follow Us</h4>
             <div className="flex gap-3">
               {[
-                { Icon: Facebook, label: 'Facebook' },
-                { Icon: Twitter, label: 'Twitter' },
-                { Icon: Instagram, label: 'Instagram' },
-                { Icon: Youtube, label: 'YouTube' },
-                { Icon: Linkedin, label: 'LinkedIn' },
-              ].map(({ Icon, label }) => (
+                { Icon: Facebook, label: 'Facebook', href: '#' },
+                { Icon: Twitter, label: 'Twitter', href: '#' },
+                { Icon: Instagram, label: 'Instagram', href: 'https://www.instagram.com/bestautomotorhome?stkn=a29qMm80MTlxcWFx' },
+                { Icon: Youtube, label: 'YouTube', href: '#' },
+                { Icon: Linkedin, label: 'LinkedIn', href: '#' },
+              ].map(({ Icon, label, href }) => (
                 <a
                   key={label}
-                  href="#"
-                  onClick={(e) => e.preventDefault()}
+                  href={href}
+                  target={href !== '#' ? '_blank' : undefined}
+                  rel={href !== '#' ? 'noopener noreferrer' : undefined}
+                  onClick={href === '#' ? (e) => e.preventDefault() : undefined}
                   className="w-9 h-9 rounded-lg glass flex items-center justify-center hover:bg-brand-500/20 hover:border-brand-400/50 transition-all"
                   aria-label={label}
                 >
