@@ -52,8 +52,8 @@ const commentsData = [
 const testimonials = [
   { name: 'Michael R.', country: '🇺🇸 United States', text: 'I received my BYD Seal in just 8 days. The whole process was transparent and professional.', car: 'BYD Seal 2025', image: michaelR },
   { name: 'Priya S.', country: '🇮🇳 India', text: 'Never thought I would own an electric car. EliteDrive made it possible. Thank you!', car: 'BYD Atto 3 2025', image: priyaS },
-  { name: 'James O.', country: '🇬🇧 United Kingdom', text: 'The delivery fee was all I paid. My BYD Han EV arrived in 10 days. Incredible!', car: 'BYD Han EV 2025', image: jamesO },
-  { name: 'Sofia L.', country: '🇧🇷 Brazil', text: 'Got my BYD Dolphin last week. The car is beautiful and drives perfectly. Best gift ever!', car: 'BYD Dolphin 2025', image: sofiaL },
+  { name: 'James O.', country: '🇬🇧 United Kingdom', text: 'The delivery fee was all I paid. My Tesla Model S Plaid 2025 arrived in 10 days. Incredible!', car: 'Tesla Model S Plaid 2025', image: jamesO },
+  { name: 'Sofia L.', country: '🇧🇷 Brazil', text: 'Got my Bob Tiffin Motorhomes Allegro Bus 2025 last week. The vehicle is beautiful and drives perfectly. Best gift ever!', car: 'Bob Tiffin Motorhomes Allegro Bus 2025', image: sofiaL },
 ];
 
 export default function HomePage() {
