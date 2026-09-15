@@ -72,7 +72,7 @@ export default function HomePage() {
       .catch(() => {})
       .finally(() => setVehiclesLoading(false));
 
-    api.get('/videos')
+    api.get('/videos?page=home')
       .then((res) => setVideos(res.data))
       .catch(() => {});
   }, []);
@@ -137,14 +137,19 @@ export default function HomePage() {
             </h1>
 
             <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
-              {['BYD', 'Tesla', 'RV'].map((brand) => (
-                <span
+              {[
+                { brand: 'BYD', to: '/byd' },
+                { brand: 'Tesla', to: '/tesla' },
+                { brand: 'RV', to: '/rv' },
+              ].map(({ brand, to }) => (
+                <Link
                   key={brand}
-                  className="inline-flex items-center gap-1.5 glass px-4 py-1.5 rounded-full"
+                  to={to}
+                  className="inline-flex items-center gap-1.5 glass px-4 py-1.5 rounded-full hover:bg-brand-500/20 hover:border-brand-400/30 transition-all"
                 >
                   <span className="text-lg font-bold text-white">{brand}</span>
                   <BadgeCheck className="w-4 h-4 text-brand-400" />
-                </span>
+                </Link>
               ))}
             </div>
 

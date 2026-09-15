@@ -30,6 +30,7 @@ export default function AdminDashboard() {
   const [videos, setVideos] = useState<VideoType[]>([]);
   const [videosLoading, setVideosLoading] = useState(true);
   const [videoTitle, setVideoTitle] = useState('');
+  const [videoPage, setVideoPage] = useState<'home' | 'byd' | 'tesla' | 'rv'>('home');
   const [videoFile, setVideoFile] = useState<File | null>(null);
   const [uploadingVideo, setUploadingVideo] = useState(false);
 
@@ -86,11 +87,12 @@ export default function AdminDashboard() {
     try {
       const data = new FormData();
       data.append('video', videoFile);
-      data.append('data', JSON.stringify({ title: videoTitle || videoFile.name }));
+      data.append('data', JSON.stringify({ title: videoTitle || videoFile.name, page: videoPage }));
       await api.post('/videos', data, {
         headers: { 'Content-Type': 'multipart/form-data' },
       });
       setVideoTitle('');
+      setVideoPage('home');
       setVideoFile(null);
       fetchVideos();
     } catch (err: any) {
@@ -469,7 +471,7 @@ export default function AdminDashboard() {
           <>
             <div className="glass-card p-6 mb-8 border-brand-500/20">
               <h2 className="font-display text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <Upload className="w-5 h-5" /> Upload Home Page Video
+                <Upload className="w-5 h-5" /> Upload Page Video
               </h2>
               <form onSubmit={uploadVideo} className="space-y-4">
                 <input
@@ -479,6 +481,16 @@ export default function AdminDashboard() {
                   placeholder="Video title"
                   className="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:border-brand-400/50 focus:outline-none"
                 />
+                <select
+                  value={videoPage}
+                  onChange={(e) => setVideoPage(e.target.value as 'home' | 'byd' | 'tesla' | 'rv')}
+                  className="w-full glass px-4 py-3 rounded-xl text-white bg-ink-950 focus:border-brand-400/50 focus:outline-none"
+                >
+                  <option value="home">Home Page</option>
+                  <option value="byd">BYD Page</option>
+                  <option value="tesla">Tesla Page</option>
+                  <option value="rv">RV Page</option>
+                </select>
                 <input
                   type="file"
                   accept="video/*"
@@ -511,7 +523,10 @@ export default function AdminDashboard() {
                   <div key={video._id} className="glass-card overflow-hidden">
                     <video className="w-full aspect-video object-cover" controls src={video.url} />
                     <div className="p-4 flex items-center justify-between">
-                      <h3 className="font-semibold text-white text-sm">{video.title}</h3>
+                      <div>
+                        <h3 className="font-semibold text-white text-sm">{video.title}</h3>
+                        <p className="text-xs text-gray-500 capitalize">{video.page} page</p>
+                      </div>
                       <button
                         onClick={() => deleteVideo(video._id)}
                         className="text-red-400 hover:text-red-300 text-xs flex items-center gap-1"

@@ -1,27 +1,36 @@
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Battery, Zap, Gauge, Car, Loader2 } from 'lucide-react';
-import type { Vehicle } from '@/types';
+import { Battery, Zap, Gauge, Car, Loader2, Video } from 'lucide-react';
+import type { Vehicle, Video as VideoType } from '@/types';
 import api from '@/lib/api';
 
 export default function RVPage() {
+  return <BrandPage brand="RV" title="All RV Models" page="rv" />;
+}
+
+function BrandPage({ brand, title, page }: { brand: string; title: string; page: 'home' | 'byd' | 'tesla' | 'rv' }) {
   const [vehicles, setVehicles] = useState<Vehicle[]>([]);
+  const [videos, setVideos] = useState<VideoType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
   useEffect(() => {
-    const fetchVehicles = async () => {
+    const fetchData = async () => {
       try {
-        const res = await api.get('/vehicles');
-        setVehicles(res.data.filter((v: Vehicle) => v.brand === 'RV'));
+        const [vehiclesRes, videosRes] = await Promise.all([
+          api.get('/vehicles'),
+          api.get(`/videos?page=${page}`),
+        ]);
+        setVehicles(vehiclesRes.data.filter((v: Vehicle) => v.brand === brand));
+        setVideos(videosRes.data);
       } catch (err) {
-        setError('Failed to load vehicles');
+        setError('Failed to load content');
       } finally {
         setLoading(false);
       }
     };
-    fetchVehicles();
-  }, []);
+    fetchData();
+  }, [brand, page]);
 
   if (loading) {
     return (
@@ -35,9 +44,9 @@ export default function RVPage() {
     <div className="min-h-screen bg-ink-950 pt-24 pb-20">
       <div className="section-padding">
         <div className="text-center mb-12">
-          <h1 className="font-display text-4xl font-bold text-white mb-3">All RV Models</h1>
+          <h1 className="font-display text-4xl font-bold text-white mb-3">{title}</h1>
           <p className="text-gray-400 max-w-2xl mx-auto">
-            Choose your preferred RV vehicle. All models are brand new editions delivered straight to your door.
+            Choose your preferred {brand} {brand === 'RV' ? 'vehicle' : 'electric car'}. All models are brand new editions delivered straight to your door.
           </p>
         </div>
 
@@ -47,10 +56,42 @@ export default function RVPage() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-16">
           {vehicles.map((vehicle) => (
             <ModelCard key={vehicle.id} vehicle={vehicle} />
           ))}
+        </div>
+
+        {/* Uploaded Videos Section */}
+        <div>
+          <h2 className="font-display text-2xl font-bold text-white mb-6 flex items-center gap-2">
+            <Video className="w-5 h-5 text-brand-400" /> {brand} Videos
+          </h2>
+          {videos.length === 0 ? (
+            <div className="glass-card p-8 text-center">
+              <p className="text-gray-400">No videos uploaded yet.</p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {videos.map((video) => (
+                <div key={video._id} className="glass-card overflow-hidden">
+                  <div className="relative aspect-video bg-ink-900">
+                    <video
+                      className="w-full h-full object-cover"
+                      controls
+                      playsInline
+                      poster={video.thumbnail}
+                    >
+                      <source src={video.url} type="video/mp4" />
+                    </video>
+                  </div>
+                  <div className="p-4">
+                    <h3 className="font-semibold text-white text-sm">{video.title}</h3>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

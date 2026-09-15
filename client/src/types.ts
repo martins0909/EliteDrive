@@ -62,5 +62,6 @@ export interface Video {
   url: string;
   thumbnail?: string;
   order: number;
+  page: 'home' | 'byd' | 'tesla' | 'rv';
   createdAt: string;
 }

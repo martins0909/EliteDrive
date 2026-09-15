@@ -5,6 +5,7 @@ export interface IVideo extends Document {
   url: string;
   thumbnail?: string;
   order: number;
+  page: 'home' | 'byd' | 'tesla' | 'rv';
 }
 
 const VideoSchema = new Schema<IVideo>({
@@ -12,6 +13,7 @@ const VideoSchema = new Schema<IVideo>({
   url: { type: String, required: true },
   thumbnail: { type: String },
   order: { type: Number, default: 0 },
+  page: { type: String, enum: ['home', 'byd', 'tesla', 'rv'], default: 'home' },
 }, {
   timestamps: true,
 });

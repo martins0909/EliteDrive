@@ -36,7 +36,12 @@ const upload = multer({ storage, limits: { fileSize: 100 * 1024 * 1024 } });
 // Get all videos (public)
 router.get('/', async (req, res) => {
   try {
-    const videos = await Video.find().sort({ order: 1, createdAt: -1 });
+    const { page } = req.query;
+    const query: any = {};
+    if (page && ['home', 'byd', 'tesla', 'rv'].includes(page as string)) {
+      query.page = page;
+    }
+    const videos = await Video.find(query).sort({ order: 1, createdAt: -1 });
     res.json(videos);
   } catch (error) {
     console.error('Fetch videos error:', error);
@@ -47,7 +52,7 @@ router.get('/', async (req, res) => {
 // Create video (admin only)
 router.post('/', auth, adminOnly, upload.single('video'), async (req, res) => {
   try {
-    const { title, order } = JSON.parse(req.body.data || '{}');
+    const { title, order, page } = JSON.parse(req.body.data || '{}');
     if (!cloudinaryConfigured && !req.file?.path) {
       return res.status(400).json({ message: 'Cloudinary is not configured and no video URL provided' });
     }
@@ -56,6 +61,7 @@ router.post('/', auth, adminOnly, upload.single('video'), async (req, res) => {
       title: title || 'Untitled Video',
       url: req.file?.path || '',
       order: order || 0,
+      page: ['home', 'byd', 'tesla', 'rv'].includes(page) ? page : 'home',
     });
     await video.save();
     res.status(201).json(video);
