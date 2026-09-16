@@ -21,15 +21,17 @@ function FlagEmoji({ code }: { code: string }) {
 
 const fallbackFeed: FeedItem[] = [
   { id: '1', customer_name: 'Paul Okonkwo', country: 'Nigeria', country_code: 'NG', car_model: 'BYD Dolphin 2025', amount: 359, minutes_ago: 35 },
-  { id: '2', customer_name: 'Maria Santos', country: 'Philippines', country_code: 'PH', car_model: 'BYD Han EV 2025', amount: 399, minutes_ago: 12 },
+  { id: '2', customer_name: 'Maria Santos', country: 'Philippines', country_code: 'PH', car_model: 'Tesla Model S Plaid 2025', amount: 399, minutes_ago: 12 },
   { id: '3', customer_name: 'James Wilson', country: 'United Kingdom', country_code: 'GB', car_model: 'BYD Seal 2025', amount: 399, minutes_ago: 47 },
   { id: '4', customer_name: 'Aisha Mohammed', country: 'Egypt', country_code: 'EG', car_model: 'BYD Atto 3 2025', amount: 349, minutes_ago: 8 },
-  { id: '5', customer_name: 'Chen Wei', country: 'Singapore', country_code: 'SG', car_model: 'BYD Tang EV 2025', amount: 449, minutes_ago: 23 },
-  { id: '6', customer_name: 'Robert Brown', country: 'United States', country_code: 'US', car_model: 'BYD Seal 2025', amount: 399, minutes_ago: 55 },
+  { id: '5', customer_name: 'Chen Wei', country: 'Singapore', country_code: 'SG', car_model: 'Tesla Model 3 2025', amount: 449, minutes_ago: 23 },
+  { id: '6', customer_name: 'Robert Brown', country: 'United States', country_code: 'US', car_model: 'Bob Tiffin Motorhomes Allegro Bus 2025', amount: 599, minutes_ago: 55 },
   { id: '7', customer_name: 'Fatima Al-Zahra', country: 'UAE', country_code: 'AE', car_model: 'BYD Han EV 2025', amount: 399, minutes_ago: 3 },
-  { id: '8', customer_name: 'Diego Ramirez', country: 'Mexico', country_code: 'MX', car_model: 'BYD Dolphin 2025', amount: 359, minutes_ago: 19 },
+  { id: '8', customer_name: 'Diego Ramirez', country: 'Mexico', country_code: 'MX', car_model: 'Winnebago Vista 2022', amount: 579, minutes_ago: 19 },
   { id: '9', customer_name: 'Sophie Martin', country: 'France', country_code: 'FR', car_model: 'BYD Atto 3 2025', amount: 349, minutes_ago: 41 },
-  { id: '10', customer_name: 'Kwame Asante', country: 'Ghana', country_code: 'GH', car_model: 'BYD Tang EV 2025', amount: 449, minutes_ago: 27 },
+  { id: '10', customer_name: 'Kwame Asante', country: 'Ghana', country_code: 'GH', car_model: 'Winnebago Adventurer 2022', amount: 599, minutes_ago: 27 },
+  { id: '11', customer_name: 'Liam OConnor', country: 'Ireland', country_code: 'IE', car_model: 'Tesla Model S Plaid 2025', amount: 399, minutes_ago: 15 },
+  { id: '12', customer_name: 'Yuki Tanaka', country: 'Japan', country_code: 'JP', car_model: 'BYD Tang EV 2025', amount: 449, minutes_ago: 31 },
 ];
 
 export default function DeliveryFeed() {

@@ -31,9 +31,9 @@ import sofiaL from '@/assets/Sofia L.jpg';
 import wangChuanfu from '@/assets/Wang Chuanfu 1.jpg';
 
 const youtubeVideos = [
-  'https://youtube.com/shorts/8FrVADUwlwc?si=GefxwBtD7RM-6_KH',
-  'https://youtube.com/shorts/-mwZ7JXOtMc?si=7OJOyUvj51VekUlQ',
-  'https://youtube.com/shorts/3PFJqZ8QXho?si=MrrcMsUd8Y-ChcZT',
+  'https://youtube.com/shorts/bpPJbRjIpxg?si=qKdPkuFwdYniLvCE',
+  'https://youtube.com/shorts/GgGHap9dq4c?si=JjfFyG2kkA6ECaKe',
+  'https://youtube.com/shorts/N-cC-fwhUkc?si=I18_qUxbYjdD9hYh',
 ];
 
 const commentsData = [
