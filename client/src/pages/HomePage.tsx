@@ -137,7 +137,7 @@ export default function HomePage() {
               Win a Brand New{' '}
               <span className="gradient-text">BYD, Tesla, RV Electric Car</span>
               <span className="block text-lg sm:text-xl lg:text-2xl font-medium text-brand-400 mt-2">
-                plus 15m dollar prize
+                plus 15 million dollar prize
               </span>
             </h1>
 
