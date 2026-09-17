@@ -29,6 +29,8 @@ import priyaS from '@/assets/Priya S.jpg';
 import jamesO from '@/assets/James O.jpg';
 import sofiaL from '@/assets/Sofia L.jpg';
 import wangChuanfu from '@/assets/Wang Chuanfu 1.jpg';
+import elonMusk from '@/assets/Elon.jpg';
+import bobTiffin from '@/assets/Bob Tiffin.png';
 
 const youtubeVideos = [
   'https://youtube.com/shorts/bpPJbRjIpxg?si=qKdPkuFwdYniLvCE',
@@ -134,6 +136,9 @@ export default function HomePage() {
             <h1 className="font-display text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4">
               Win a Brand New{' '}
               <span className="gradient-text">BYD, Tesla, RV Electric Car</span>
+              <span className="block text-lg sm:text-xl lg:text-2xl font-medium text-brand-400 mt-2">
+                plus 15m dollar prize
+              </span>
             </h1>
 
             <div className="flex items-center justify-center gap-3 mb-6 flex-wrap">
@@ -369,6 +374,89 @@ export default function HomePage() {
             vehicles to participants around the world. This is our commitment to a greener future
             and making electric mobility accessible to everyone. Claim your car today and join the
             electric revolution!"
+          </p>
+
+          <div className="flex items-center gap-6 text-sm text-gray-400 pt-4 border-t border-white/5">
+            <button className="flex items-center gap-1.5 hover:text-red-400 transition-colors">
+              <Heart className="w-4 h-4" /> 14k
+            </button>
+            <button className="flex items-center gap-1.5 hover:text-brand-400 transition-colors">
+              <MessageCircle className="w-4 h-4" /> 3.2k
+            </button>
+            <button className="flex items-center gap-1.5 hover:text-brand-400 transition-colors">
+              <Repeat2 className="w-4 h-4" /> Reshare
+            </button>
+          </div>
+        </div>
+
+        {/* Elon Musk */}
+        <div className="glass-card p-6 max-w-3xl mx-auto mt-6">
+          <div className="flex gap-3 mb-4">
+            <img
+              src={elonMusk}
+              alt="CEO Elon Musk"
+              className="w-12 h-12 rounded-full object-cover border-2 border-gold-500/50 shrink-0"
+            />
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-white">Elon Musk</span>
+                <BadgeCheck className="w-4 h-4 text-brand-400" />
+                <span className="text-xs text-gray-500">CEO, Tesla Company</span>
+              </div>
+              <p className="text-xs text-gray-500">3 days ago</p>
+            </div>
+          </div>
+
+          <p className="text-gray-300 leading-relaxed mb-4">
+            "We're excited to join forces with EliteDrive MotorGrants to make the dream of owning a
+            brand-new electric vehicle a reality for participants worldwide. Together, we're
+            supporting a cleaner, more sustainable future while helping make electric mobility more
+            accessible. Take the next step toward your new EV and be part of the journey to a greener
+            tomorrow!"
+          </p>
+
+          <div className="flex items-center gap-6 text-sm text-gray-400 pt-4 border-t border-white/5">
+            <button className="flex items-center gap-1.5 hover:text-red-400 transition-colors">
+              <Heart className="w-4 h-4" /> 14k
+            </button>
+            <button className="flex items-center gap-1.5 hover:text-brand-400 transition-colors">
+              <MessageCircle className="w-4 h-4" /> 3.2k
+            </button>
+            <button className="flex items-center gap-1.5 hover:text-brand-400 transition-colors">
+              <Repeat2 className="w-4 h-4" /> Reshare
+            </button>
+          </div>
+        </div>
+
+        {/* Bob Tiffin */}
+        <div className="glass-card p-6 max-w-3xl mx-auto mt-6">
+          <div className="flex gap-3 mb-4">
+            <img
+              src={bobTiffin}
+              alt="CEO Bob Tiffin"
+              className="w-12 h-12 rounded-full object-cover border-2 border-gold-500/50 shrink-0"
+            />
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="font-semibold text-white">Bob Tiffin</span>
+                <BadgeCheck className="w-4 h-4 text-brand-400" />
+                <span className="text-xs text-gray-500">CEO, Tiffin Motor Homes</span>
+              </div>
+              <p className="text-xs text-gray-500">3 days ago</p>
+            </div>
+          </div>
+
+          <p className="text-gray-300 leading-relaxed mb-4">
+            "As the CEO of Tiffin Motor Homes, I'm proud to be part of this exciting initiative with
+            EliteDrive MotorGrants. Our goal is to help create new opportunities for people to
+            experience the benefits of modern electric transportation while contributing to a more
+            sustainable future.
+            <br /><br />
+            We believe electric mobility represents an important step forward, and we're delighted to
+            support an initiative that brings these possibilities closer to people around the world.
+            <br /><br />
+            Your journey toward a new electric vehicle could begin today. Welcome to a smarter, cleaner
+            future with EliteDrive MotorGrants."
           </p>
 
           <div className="flex items-center gap-6 text-sm text-gray-400 pt-4 border-t border-white/5">
