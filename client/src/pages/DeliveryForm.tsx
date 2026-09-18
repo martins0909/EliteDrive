@@ -80,8 +80,13 @@ export default function DeliveryForm() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
-    setSubmitting(true);
 
+    if (!idFile) {
+      setError('Please upload your Government ID or identity document before submitting.');
+      return;
+    }
+
+    setSubmitting(true);
     try {
       const data = new FormData();
       data.append('carModel', formData.carModel);
@@ -348,11 +353,16 @@ export default function DeliveryForm() {
 
           <button
             type="submit"
-            disabled={submitting || uploading}
+            disabled={submitting || uploading || !idFile}
             className="w-full btn-primary text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : uploading ? 'Uploading document...' : 'Submit / Order Now'}
           </button>
+          {!idFile && (
+            <p className="text-xs text-center text-red-400 mt-2">
+              Government ID upload is required to submit your order.
+            </p>
+          )}
         </form>
       </div>
     </div>

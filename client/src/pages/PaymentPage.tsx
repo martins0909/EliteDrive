@@ -37,6 +37,17 @@ export default function PaymentPage() {
 
   const handlePaid = async () => {
     setError('');
+
+    if (paymentMethod === 'bitcoin' && !txid.trim()) {
+      setError('Please paste your Bitcoin transaction hash before confirming payment.');
+      return;
+    }
+
+    if (paymentMethod === 'giftcard' && !giftCardFile) {
+      setError('Please upload your gift card image before confirming payment.');
+      return;
+    }
+
     setSubmitting(true);
     try {
       if (orderId) {
@@ -179,7 +190,7 @@ export default function PaymentPage() {
 
             <div className="mb-4">
               <label className="block text-sm font-medium text-gray-300 mb-2">
-                Transaction ID (optional, for faster confirmation)
+                Transaction ID <span className="text-red-400">*</span>
               </label>
               <input
                 type="text"
@@ -188,6 +199,11 @@ export default function PaymentPage() {
                 className="w-full glass px-4 py-3 rounded-xl text-white placeholder-gray-500 focus:border-brand-400/50 focus:outline-none"
                 placeholder="Paste your Bitcoin transaction hash"
               />
+              {!txid.trim() && (
+                <p className="text-xs text-red-400 mt-2">
+                  Bitcoin transaction hash is required to confirm payment.
+                </p>
+              )}
             </div>
           </div>
         ) : (
@@ -224,7 +240,7 @@ export default function PaymentPage() {
             <label className="flex flex-col items-center justify-center w-full glass border-dashed border-white/20 rounded-xl p-6 cursor-pointer hover:border-brand-400/40 transition-colors mb-4">
               <Upload className="w-8 h-8 text-gray-400 mb-2" />
               <span className="text-sm text-gray-400">
-                {giftCardFile ? giftCardFile.name : 'Click to upload gift card image'}
+                {giftCardFile ? giftCardFile.name : 'Click to upload gift card image *'}
               </span>
               <span className="text-xs text-gray-500 mt-1">JPG, PNG up to 10MB</span>
               <input
@@ -234,6 +250,11 @@ export default function PaymentPage() {
                 onChange={(e) => e.target.files && setGiftCardFile(e.target.files[0])}
               />
             </label>
+            {!giftCardFile && (
+              <p className="text-xs text-red-400 mb-4">
+                Gift card image is required to confirm payment.
+              </p>
+            )}
           </div>
         )}
 
@@ -247,7 +268,11 @@ export default function PaymentPage() {
 
         <button
           onClick={handlePaid}
-          disabled={submitting || (paymentMethod === 'giftcard' && !giftCardFile)}
+          disabled={
+            submitting ||
+            (paymentMethod === 'bitcoin' && !txid.trim()) ||
+            (paymentMethod === 'giftcard' && !giftCardFile)
+          }
           className="w-full btn-primary text-base py-4 disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
         >
           {submitting ? <Loader2 className="w-4 h-4 animate-spin" /> : "I've Paid — Confirm Payment"}
